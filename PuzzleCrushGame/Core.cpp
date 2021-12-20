@@ -7,7 +7,7 @@ Core* Core::getInstence()
 {
 	if (nullptr == mCore) 
 	{
-		mCore = new Core();
+		mCore = new Core;
 	}
 	return mCore;
 }
@@ -31,30 +31,6 @@ bool Core::init(HINSTANCE hInstence)
 	return true;
 }
 
-int Core::run()
-{
-    MSG msg = {};
-
-    while (mFlag) 
-    {
-        if (PeekMessage(&msg, mHWnd, 0, 0, PM_REMOVE)) 
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else 
-        {
-            /*
-                메시지가 없을 때 계속 이쪽으로 들어오면서 
-                게임이 실행되는 로직은 여기서부터 시작이다.
-            */
-        }
-    }
-
-
-    return (int)msg.wParam;
-}
-
 ATOM Core::MyRegisterClass()
 {
     WNDCLASSEXW wcex;
@@ -75,14 +51,14 @@ ATOM Core::MyRegisterClass()
     return RegisterClassExW(&wcex);
 }
 
-BOOL Core::Create()
+bool Core::Create()
 {
     mHWnd = CreateWindowW(TEXT("Puzzle Game"), TEXT("Puzzle Game"), WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, mHInstence, nullptr);
 
-    if (!mHWnd)
+    if (nullptr == mHWnd)
     {
-        return FALSE;
+        return false;
     }
 
     mHdc = GetDC(mHWnd);
@@ -90,7 +66,33 @@ BOOL Core::Create()
     ShowWindow(mHWnd, SW_SHOW);
     UpdateWindow(mHWnd);
 
-    return TRUE;
+    return true;
+}
+
+/*
+    Message Loop
+*/
+int Core::run()
+{
+    MSG msg = {};
+
+    while (mFlag)
+    {
+        if (PeekMessage(&msg, mHWnd, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            /*
+                메시지가 없을 때 계속 이쪽으로 들어오면서
+                게임이 실행되는 로직은 여기서부터 시작이다.
+            */
+        }
+    }
+
+    return (int)msg.wParam;
 }
 
 LRESULT Core::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

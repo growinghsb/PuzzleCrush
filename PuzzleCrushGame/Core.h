@@ -7,6 +7,7 @@ class Core
 public:
 	static Core* getInstence();
 	static void destoryInstence();
+
 	bool init(HINSTANCE hInstence);
 	int run();
 
@@ -17,7 +18,7 @@ private:
 	~Core() = default;
 
 	ATOM				MyRegisterClass();
-	BOOL                Create();
+	bool                Create();
 
 	static Core* mCore;
 	static bool mFlag;
