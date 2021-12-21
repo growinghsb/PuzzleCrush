@@ -9,13 +9,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     if (!Core::getInstence()->init(hInstance)) 
     {
-        Core::getInstence()->deleteInstence();
+        Core::deleteInstence();
         return 0;
     }
 
     int returnValue = Core::getInstence()->run();
 
-    Core::getInstence()->deleteInstence();
+    Core::deleteInstence();
 
     return returnValue;
 }

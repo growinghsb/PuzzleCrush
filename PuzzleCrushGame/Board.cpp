@@ -54,7 +54,7 @@ void Board::init()
 		for (int j = 0; j < HEIGHT; ++j)
 		{
 			pos.x += BOARD_SIZE;
-			mPuzzles.push_back(new Puzzle(pos, puzzleSize, mPuzzleColorNames[rand() % 6]));
+			mPuzzles.push_back(new Puzzle(pos, puzzleSize, mPuzzleColorNames[rand() % (unsigned int)COLORS::END]));
 		}
 		pos.x = 0;
 	}

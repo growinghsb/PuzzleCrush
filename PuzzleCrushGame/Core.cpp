@@ -16,6 +16,7 @@ Core* Core::getInstence()
 void Core::deleteInstence()
 {
 	delete mCore;
+    Board::deleteInstence();
 }
 
 bool Core::init(HINSTANCE hInstence)
