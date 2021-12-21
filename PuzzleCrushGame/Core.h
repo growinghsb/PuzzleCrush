@@ -8,7 +8,7 @@ public:
 	static Core* getInstence();
 	static void deleteInstence();
 
-	bool init(HINSTANCE hInstence);
+	bool init(HINSTANCE hInstence, POINT windowResolution);
 	int run();
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

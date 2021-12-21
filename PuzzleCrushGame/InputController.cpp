@@ -13,7 +13,11 @@ InputController* InputController::getInstence()
 
 void InputController::deleteInstence()
 {
-	delete mInputController;
+	if (nullptr != mInputController) 
+	{
+		delete mInputController;
+		mInputController = nullptr;
+	}
 }
 
 void InputController::inputControl(HWND hWnd)

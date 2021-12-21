@@ -35,7 +35,11 @@ Board* Board::getInstence()
 
 void Board::deleteInstence()
 {
-	delete mBoard;
+	if (nullptr != mBoard) 
+	{
+		delete mBoard;
+		mBoard = nullptr;
+	}
 }
 
 void Board::init()
