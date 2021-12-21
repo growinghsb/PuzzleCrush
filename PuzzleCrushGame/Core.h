@@ -8,13 +8,13 @@ public:
 	static Core* getInstence();
 	static void deleteInstence();
 
-	bool init(HINSTANCE hInstence, POINT windowResolution);
+	bool init(HINSTANCE hInstence);
 	int run();
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
-	Core() = default;
+	Core()  = default;
 	~Core() = default;
 
 	ATOM				MyRegisterClass();

@@ -1,4 +1,5 @@
-#include "InputController.h"
+#include"InputController.h"
+#include"Board.h" 
 
 InputController* InputController::mInputController;
 
@@ -20,13 +21,16 @@ void InputController::deleteInstence()
 	}
 }
 
-void InputController::inputControl(HWND hWnd)
+void InputController::lButtonClicked(int x, int y)
 {
-	POINT clickPoint = {};
+	static POINT oldMousePos = {};
+	static POINT newMousePos = {};
+	
+	newMousePos = { x, y };
 
-	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) 
-	{	
-		GetCursorPos(&clickPoint);
-		ScreenToClient(hWnd, &clickPoint);
+	POINT puzzlePos = {};
+	if (Board::getInstence()->findPuzzle(puzzlePos, newMousePos)) 
+	{
+		
 	}
 }

@@ -26,7 +26,7 @@ void Core::deleteInstence()
 	InputController::deleteInstence();
 }
 
-bool Core::init(HINSTANCE hInstence, POINT windowResolution)
+bool Core::init(HINSTANCE hInstence)
 {
 	mHInstence = hInstence;
 
@@ -36,10 +36,6 @@ bool Core::init(HINSTANCE hInstence, POINT windowResolution)
 	{
 		return false;
 	}
-
-	RECT window = { 0, 0, windowResolution.x, windowResolution.y };
-	AdjustWindowRect(&window, WS_OVERLAPPEDWINDOW, false);
-	SetWindowPos(mHWnd, nullptr, 0, 0, window.right - window.left, window.bottom - window.top, SWP_NOMOVE | SWP_NOZORDER);
 
 	Board::getInstence()->init();
 	Board::getInstence()->draw(mHdc);
@@ -69,8 +65,8 @@ ATOM Core::MyRegisterClass()
 
 bool Core::Create()
 {
-	mHWnd = CreateWindowW(TEXT("Puzzle Game"), TEXT("Puzzle Game"), WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, mHInstence, nullptr);
+	mHWnd = CreateWindow(TEXT("Puzzle Game"), TEXT("Puzzle Game"), WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, mHInstence, nullptr);
 
 	if (nullptr == mHWnd)
 	{
@@ -79,8 +75,13 @@ bool Core::Create()
 
 	mHdc = GetDC(mHWnd);
 
+	POINT resolution = { 1200, 600 };
+
+	RECT window = { 0, 0, resolution.x, resolution.y };
+	AdjustWindowRect(&window, WS_OVERLAPPEDWINDOW, false);
+	SetWindowPos(mHWnd, HWND_TOPMOST, 100, 100, window.right - window.left, window.bottom - window.top, SWP_SHOWWINDOW);
+
 	ShowWindow(mHWnd, SW_SHOW);
-	UpdateWindow(mHWnd);
 
 	return true;
 }
@@ -105,7 +106,7 @@ int Core::run()
 				메시지가 없을 때 계속 이쪽으로 들어오면서
 				게임이 실행되는 로직은 여기서부터 시작이다.
 			*/
-			InputController::getInstence()->inputControl(mHWnd);
+			
 			Board::getInstence()->draw(mHdc);
 		}
 	}
@@ -125,6 +126,10 @@ LRESULT Core::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 	}
 	break;
+	case WM_LBUTTONDOWN:
+		InputController::getInstence()->lButtonClicked(LOWORD(lParam), HIWORD(lParam));
+		break;
+
 	case WM_DESTROY:
 		mFlag = false;
 		PostQuitMessage(0);

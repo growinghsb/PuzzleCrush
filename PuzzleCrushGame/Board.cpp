@@ -35,7 +35,7 @@ Board* Board::getInstence()
 
 void Board::deleteInstence()
 {
-	if (nullptr != mBoard) 
+	if (nullptr != mBoard)
 	{
 		delete mBoard;
 		mBoard = nullptr;
@@ -49,15 +49,15 @@ void Board::init()
 	mPuzzles.reserve(WIDTH * HEIGHT);
 
 	POINT pos = {};
-	int puzzleSize = BOARD_SIZE;
+	int puzzleSize = PUZZLE_SIZE;
 
 	for (int i = 0; i < WIDTH; ++i)
 	{
-		pos.y += BOARD_SIZE;
+		pos.y += PUZZLE_SIZE;
 
 		for (int j = 0; j < HEIGHT; ++j)
 		{
-			pos.x += BOARD_SIZE;
+			pos.x += PUZZLE_SIZE;
 			mPuzzles.push_back(new Puzzle(pos, puzzleSize, mPuzzleColorNames[rand() % (unsigned int)COLORS::END]));
 		}
 		pos.x = 0;
@@ -97,4 +97,24 @@ void Board::draw(HDC hdc)
 	}
 
 	DeleteObject(SelectObject(hdc, oldBrush));
+}
+
+bool Board::findPuzzle(POINT& puzzlePos, POINT mousePos)
+{
+	for (int i = 0; i < HEIGHT * WIDTH; i += HEIGHT)
+	{
+		if (mPuzzles[i]->mPos.y + PUZZLE_SIZE >= mousePos.y)
+		{
+			for (int j = i; j < i + WIDTH; ++j)
+			{
+				if (mPuzzles[j]->mPos.x + PUZZLE_SIZE >= mousePos.x)
+				{
+					puzzlePos = { mPuzzles[j]->mPos.x, mPuzzles[j]->mPos.y };
+					return true;
+				}
+			}
+			break;
+		}
+	}
+	return false;
 }
