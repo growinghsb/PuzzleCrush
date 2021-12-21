@@ -143,6 +143,7 @@
     <ClInclude Include="Core.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="InputController.h" />
     <ClInclude Include="Puzzle.h" />
     <ClInclude Include="PuzzleCrushGame.h" />
     <ClInclude Include="Resource.h" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="InputController.cpp" />
     <ClCompile Include="Puzzle.cpp" />
     <ClCompile Include="PuzzleCrushGame.cpp" />
   </ItemGroup>
