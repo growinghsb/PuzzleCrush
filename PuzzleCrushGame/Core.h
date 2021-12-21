@@ -6,7 +6,7 @@ class Core
 {
 public:
 	static Core* getInstence();
-	static void destoryInstence();
+	static void deleteInstence();
 
 	bool init(HINSTANCE hInstence);
 	int run();

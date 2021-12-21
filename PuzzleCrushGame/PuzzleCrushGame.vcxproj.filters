@@ -16,6 +16,12 @@
     <Filter Include="Core">
       <UniqueIdentifier>{16c40db7-5b30-4d83-b542-c05b2ed8400d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Board">
+      <UniqueIdentifier>{61368535-321a-4044-b528-74e21cb95da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Puzzle">
+      <UniqueIdentifier>{275bea8d-f3e2-4fa7-b5f8-23ffa8d093d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +42,12 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>Board</Filter>
+    </ClInclude>
+    <ClInclude Include="Puzzle.h">
+      <Filter>Puzzle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PuzzleCrushGame.cpp">
@@ -43,6 +55,12 @@
     </ClCompile>
     <ClCompile Include="Core.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Board</Filter>
+    </ClCompile>
+    <ClCompile Include="Puzzle.cpp">
+      <Filter>Puzzle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

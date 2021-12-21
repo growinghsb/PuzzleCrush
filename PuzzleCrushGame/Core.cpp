@@ -1,4 +1,5 @@
-#include "Core.h"
+#include"Core.h"
+#include"Board.h"
 
 Core* Core::mCore;
 bool Core::mFlag = true;
@@ -12,7 +13,7 @@ Core* Core::getInstence()
 	return mCore;
 }
 
-void Core::destoryInstence()
+void Core::deleteInstence()
 {
 	delete mCore;
 }
@@ -27,6 +28,9 @@ bool Core::init(HINSTANCE hInstence)
     {
         return false;
     }
+
+    Board::getInstence()->init();
+    Board::getInstence()->draw(mHdc);
 
 	return true;
 }

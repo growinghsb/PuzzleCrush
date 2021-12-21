@@ -7,15 +7,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-    if (false == Core::getInstence()->init(hInstance)) 
+    if (!Core::getInstence()->init(hInstance)) 
     {
-        Core::getInstence()->destoryInstence();
+        Core::getInstence()->deleteInstence();
         return 0;
     }
 
     int returnValue = Core::getInstence()->run();
 
-    Core::getInstence()->destoryInstence();
+    Core::getInstence()->deleteInstence();
 
     return returnValue;
 }
