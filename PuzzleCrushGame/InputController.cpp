@@ -14,7 +14,7 @@ InputController* InputController::getInstence()
 
 void InputController::deleteInstence()
 {
-	if (nullptr != mInputController) 
+	if (nullptr != mInputController)
 	{
 		delete mInputController;
 		mInputController = nullptr;
@@ -23,14 +23,22 @@ void InputController::deleteInstence()
 
 void InputController::lButtonClicked(int x, int y)
 {
-	static POINT oldMousePos = {};
-	static POINT newMousePos = {};
-	
-	newMousePos = { x, y };
+	static POINT oldPuzzlePos = {};
+	POINT		 newPuzzlePos = {};
 
-	POINT puzzlePos = {};
-	if (Board::getInstence()->findPuzzle(puzzlePos, newMousePos)) 
+	int puzzleIndex = Board::getInstence()->findPuzzle(newPuzzlePos, POINT{ x, y });
+	if (-1 != puzzleIndex)
 	{
-		
+		if (oldPuzzlePos.x == newPuzzlePos.x && oldPuzzlePos.y == newPuzzlePos.y)
+		{
+			Board::getInstence()->offPuzzleSolid(puzzleIndex, newPuzzlePos);
+			newPuzzlePos = { 0, 0 };
+		}
+		else
+		{
+			Board::getInstence()->onPuzzleSolid(puzzleIndex, newPuzzlePos, oldPuzzlePos);
+		}
 	}
+
+	oldPuzzlePos = newPuzzlePos;
 }

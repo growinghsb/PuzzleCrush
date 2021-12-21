@@ -11,4 +11,5 @@ Puzzle::Puzzle(long x, long y, int size, int colorCode)
 	mPos.x = x;
 	mPos.y = y;
 	mSize = size;
+	mIsSolid = false;
 }

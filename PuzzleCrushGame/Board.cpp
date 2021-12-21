@@ -64,9 +64,11 @@ void Board::init()
 	}
 }
 
-void Board::draw(HDC hdc)
+void Board::draw(HDC hdc, HWND hWnd)
 {
 	HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(DC_BRUSH));
+	HPEN newPen;
+	HPEN oldPen;
 
 	for (int i = 0; i < WIDTH * HEIGHT; ++i)
 	{
@@ -93,13 +95,24 @@ void Board::draw(HDC hdc)
 			SetDCBrushColor(hdc, RGB(236, 252, 18));
 			break;
 		}
-		Rectangle(hdc, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
+
+		if (curPuzzle->getIsSolid())
+		{
+			newPen = CreatePen(PS_SOLID, 7, RGB(0, 0, 0));
+			oldPen = (HPEN)SelectObject(hdc, newPen);
+			Rectangle(hdc, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
+			DeleteObject(SelectObject(hdc, oldPen));
+		}
+		else
+		{
+			Rectangle(hdc, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
+		}
 	}
 
 	DeleteObject(SelectObject(hdc, oldBrush));
 }
 
-bool Board::findPuzzle(POINT& puzzlePos, POINT mousePos)
+int Board::findPuzzle(POINT& puzzlePosInOut, POINT mousePos)
 {
 	for (int i = 0; i < HEIGHT * WIDTH; i += HEIGHT)
 	{
@@ -109,12 +122,69 @@ bool Board::findPuzzle(POINT& puzzlePos, POINT mousePos)
 			{
 				if (mPuzzles[j]->mPos.x + PUZZLE_SIZE >= mousePos.x)
 				{
-					puzzlePos = { mPuzzles[j]->mPos.x, mPuzzles[j]->mPos.y };
-					return true;
+					puzzlePosInOut = { mPuzzles[j]->mPos.x, mPuzzles[j]->mPos.y };
+					return j;
 				}
 			}
 			break;
 		}
 	}
-	return false;
+	return -1;
+}
+
+void Board::onPuzzleSolid(int index, POINT puzzlePos, POINT oldPuzzlePos)
+{
+	int oldPuzzleIndex = getPuzzleIndex(oldPuzzlePos);
+
+	if (-1 != oldPuzzleIndex)
+	{
+		fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
+	}
+
+	fourWayPuzzleCheck(index, puzzlePos, true);
+}
+
+void Board::offPuzzleSolid(int index, POINT puzzlePos)
+{
+	fourWayPuzzleCheck(index, puzzlePos, false);
+}
+
+int Board::getPuzzleIndex(POINT puzzlePos)
+{
+	for (int i = 0; i < WIDTH * HEIGHT; ++i)
+	{
+		if (mPuzzles[i]->mPos.x == puzzlePos.x && mPuzzles[i]->mPos.y == puzzlePos.y)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+void Board::fourWayPuzzleCheck(int index, POINT puzzlePos, bool state)
+{
+	// right 있는지 비교
+	if (WIDTH * PUZZLE_SIZE >= puzzlePos.x + PUZZLE_SIZE)
+	{
+		mPuzzles[(size_t)index + 1]->setSolid(state);
+	}
+
+	// left 있는지 비교
+	if (PUZZLE_SIZE <= puzzlePos.x - PUZZLE_SIZE)
+	{
+		mPuzzles[(size_t)index - 1]->setSolid(state);
+	}
+
+	// up 있는지 비교
+	if (PUZZLE_SIZE <= puzzlePos.y - PUZZLE_SIZE)
+	{
+		mPuzzles[(size_t)index - HEIGHT]->setSolid(state);
+	}
+
+	// down 있는지 비교
+	if (HEIGHT * PUZZLE_SIZE >= puzzlePos.y + PUZZLE_SIZE)
+	{
+		mPuzzles[(size_t)index + HEIGHT]->setSolid(state);
+	}
 }

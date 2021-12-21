@@ -38,7 +38,7 @@ bool Core::init(HINSTANCE hInstence)
 	}
 
 	Board::getInstence()->init();
-	Board::getInstence()->draw(mHdc);
+	Board::getInstence()->draw(mHdc, mHWnd);
 
 	return true;
 }
@@ -79,7 +79,7 @@ bool Core::Create()
 
 	RECT window = { 0, 0, resolution.x, resolution.y };
 	AdjustWindowRect(&window, WS_OVERLAPPEDWINDOW, false);
-	SetWindowPos(mHWnd, HWND_TOPMOST, 100, 100, window.right - window.left, window.bottom - window.top, SWP_SHOWWINDOW);
+	SetWindowPos(mHWnd, HWND_TOPMOST, 50, 50, window.right - window.left, window.bottom - window.top, SWP_SHOWWINDOW);
 
 	ShowWindow(mHWnd, SW_SHOW);
 
@@ -107,7 +107,7 @@ int Core::run()
 				게임이 실행되는 로직은 여기서부터 시작이다.
 			*/
 			
-			Board::getInstence()->draw(mHdc);
+			Board::getInstence()->draw(mHdc, mHWnd);
 		}
 	}
 
