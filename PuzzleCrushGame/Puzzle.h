@@ -12,14 +12,14 @@ public:
 		return POINT{ mPos.x / 2, mPos.y / 2 };
 	}
 
-	void setSolid(bool state) 
+	void setChoice(bool state) 
 	{
-		mIsSolid = state;
+		mIsChoice = state;
 	}
 
-	bool getIsSolid() 
+	bool getChoice() 
 	{
-		return mIsSolid;
+		return mIsChoice;
 	}
 
 private:
@@ -29,6 +29,6 @@ private:
 	POINT mPos;
 	int mSize;
 	int mColorCode;
-	bool mIsSolid;
+	bool mIsChoice;
 };
 

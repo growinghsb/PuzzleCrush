@@ -2,6 +2,7 @@
 #include "Puzzle.h"
 
 Board* Board::mBoard;
+HBITMAP hBitmap;
 
 // private
 Board::Board()
@@ -49,16 +50,15 @@ void Board::init()
 	mPuzzles.reserve(WIDTH * HEIGHT);
 
 	POINT pos = {};
-	int puzzleSize = PUZZLE_SIZE;
 
-	for (int i = 0; i < WIDTH; ++i)
+	for (int i = 0; i < HEIGHT; ++i)
 	{
 		pos.y += PUZZLE_SIZE;
 
-		for (int j = 0; j < HEIGHT; ++j)
+		for (int j = 0; j < WIDTH; ++j)
 		{
 			pos.x += PUZZLE_SIZE;
-			mPuzzles.push_back(new Puzzle(pos, puzzleSize, mPuzzleColorNames[rand() % (unsigned int)COLORS::END]));
+			mPuzzles.push_back(new Puzzle(pos, PUZZLE_SIZE, mPuzzleColorNames[rand() % (unsigned int)COLORS::END]));
 		}
 		pos.x = 0;
 	}
@@ -66,9 +66,22 @@ void Board::init()
 
 void Board::draw(HDC hdc, HWND hWnd)
 {
-	HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(DC_BRUSH));
-	HPEN newPen;
-	HPEN oldPen;
+	HBITMAP oldHBitmap;
+	HDC hMemDC;
+
+	RECT client = {};
+	GetClientRect(hWnd, &client);
+
+	if (nullptr == hBitmap)
+	{
+		hBitmap = CreateCompatibleBitmap(hdc, client.right, client.bottom);
+	}
+
+	hMemDC = CreateCompatibleDC(hdc);
+	oldHBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
+	FillRect(hMemDC, &client, GetSysColorBrush(COLOR_WINDOW));
+
+	HBRUSH oldBrush = (HBRUSH)SelectObject(hMemDC, GetStockObject(DC_BRUSH));
 
 	for (int i = 0; i < WIDTH * HEIGHT; ++i)
 	{
@@ -77,42 +90,64 @@ void Board::draw(HDC hdc, HWND hWnd)
 		switch (curPuzzle->mColorCode)
 		{
 		case (unsigned int)COLORS::RED:
-			SetDCBrushColor(hdc, RGB(255, 0, 0));
+			SetDCBrushColor(hMemDC, RGB(255, 0, 0));
 			break;
 		case (unsigned int)COLORS::PINK:
-			SetDCBrushColor(hdc, RGB(255, 204, 255));
+			SetDCBrushColor(hMemDC, RGB(255, 204, 255));
 			break;
 		case (unsigned int)COLORS::ORANGE:
-			SetDCBrushColor(hdc, RGB(255, 189, 4));
+			SetDCBrushColor(hMemDC, RGB(255, 189, 4));
 			break;
 		case (unsigned int)COLORS::GREEN:
-			SetDCBrushColor(hdc, RGB(0, 255, 29));
+			SetDCBrushColor(hMemDC, RGB(0, 255, 29));
 			break;
 		case (unsigned int)COLORS::BLUE:
-			SetDCBrushColor(hdc, RGB(0, 0, 255));
+			SetDCBrushColor(hMemDC, RGB(0, 0, 255));
 			break;
 		case (unsigned int)COLORS::YELLOW:
-			SetDCBrushColor(hdc, RGB(236, 252, 18));
+			SetDCBrushColor(hMemDC, RGB(236, 252, 18));
 			break;
 		}
 
-		if (curPuzzle->getIsSolid())
+		if (curPuzzle->getChoice())
 		{
-			newPen = CreatePen(PS_SOLID, 7, RGB(0, 0, 0));
-			oldPen = (HPEN)SelectObject(hdc, newPen);
-			Rectangle(hdc, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
-			DeleteObject(SelectObject(hdc, oldPen));
+		
+			HPEN newPen = CreatePen(PS_DOT, 7, RGB(0, 0, 0));
+			HPEN oldPen = (HPEN)SelectObject(hMemDC, newPen);
+			Rectangle(hMemDC, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
+			DeleteObject(SelectObject(hMemDC, oldPen));
 		}
 		else
 		{
-			Rectangle(hdc, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
+			Rectangle(hMemDC, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
 		}
 	}
 
-	DeleteObject(SelectObject(hdc, oldBrush));
+	DeleteObject(SelectObject(hMemDC, oldBrush));
+	SelectObject(hMemDC, oldHBitmap);
+	DeleteDC(hMemDC);
+
+	print(hdc, hWnd);
 }
 
-int Board::findPuzzle(POINT& puzzlePosInOut, POINT mousePos)
+
+void Board::print(HDC hdc, HWND hWnd)
+{
+	HDC hMemDC;
+	HBITMAP hOldBitmap;
+
+	RECT client = {};
+	GetClientRect(hWnd, &client);
+
+	hMemDC = CreateCompatibleDC(hdc);
+	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
+	BitBlt(hdc, 0, 0, client.right, client.bottom, hMemDC, 0, 0, SRCCOPY);
+
+	SelectObject(hMemDC, hOldBitmap);
+	DeleteDC(hMemDC);
+}
+
+int Board::findPuzzle(POINT* puzzlePosInOut, POINT mousePos)
 {
 	for (int i = 0; i < HEIGHT * WIDTH; i += HEIGHT)
 	{
@@ -122,7 +157,7 @@ int Board::findPuzzle(POINT& puzzlePosInOut, POINT mousePos)
 			{
 				if (mPuzzles[j]->mPos.x + PUZZLE_SIZE >= mousePos.x)
 				{
-					puzzlePosInOut = { mPuzzles[j]->mPos.x, mPuzzles[j]->mPos.y };
+					*puzzlePosInOut = { mPuzzles[j]->mPos.x, mPuzzles[j]->mPos.y };
 					return j;
 				}
 			}
@@ -132,7 +167,7 @@ int Board::findPuzzle(POINT& puzzlePosInOut, POINT mousePos)
 	return -1;
 }
 
-void Board::onPuzzleSolid(int index, POINT puzzlePos, POINT oldPuzzlePos)
+void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 {
 	int oldPuzzleIndex = getPuzzleIndex(oldPuzzlePos);
 
@@ -144,7 +179,7 @@ void Board::onPuzzleSolid(int index, POINT puzzlePos, POINT oldPuzzlePos)
 	fourWayPuzzleCheck(index, puzzlePos, true);
 }
 
-void Board::offPuzzleSolid(int index, POINT puzzlePos)
+void Board::deSelect(int index, POINT puzzlePos)
 {
 	fourWayPuzzleCheck(index, puzzlePos, false);
 }
@@ -167,24 +202,24 @@ void Board::fourWayPuzzleCheck(int index, POINT puzzlePos, bool state)
 	// right 있는지 비교
 	if (WIDTH * PUZZLE_SIZE >= puzzlePos.x + PUZZLE_SIZE)
 	{
-		mPuzzles[(size_t)index + 1]->setSolid(state);
+		mPuzzles[(size_t)index + 1]->setChoice(state);
 	}
 
 	// left 있는지 비교
 	if (PUZZLE_SIZE <= puzzlePos.x - PUZZLE_SIZE)
 	{
-		mPuzzles[(size_t)index - 1]->setSolid(state);
+		mPuzzles[(size_t)index - 1]->setChoice(state);
 	}
 
 	// up 있는지 비교
 	if (PUZZLE_SIZE <= puzzlePos.y - PUZZLE_SIZE)
 	{
-		mPuzzles[(size_t)index - HEIGHT]->setSolid(state);
+		mPuzzles[(size_t)index - HEIGHT]->setChoice(state);
 	}
 
 	// down 있는지 비교
 	if (HEIGHT * PUZZLE_SIZE >= puzzlePos.y + PUZZLE_SIZE)
 	{
-		mPuzzles[(size_t)index + HEIGHT]->setSolid(state);
+		mPuzzles[(size_t)index + HEIGHT]->setChoice(state);
 	}
 }

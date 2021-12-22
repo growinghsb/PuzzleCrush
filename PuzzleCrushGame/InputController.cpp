@@ -26,17 +26,17 @@ void InputController::lButtonClicked(int x, int y)
 	static POINT oldPuzzlePos = {};
 	POINT		 newPuzzlePos = {};
 
-	int puzzleIndex = Board::getInstence()->findPuzzle(newPuzzlePos, POINT{ x, y });
+	int puzzleIndex = Board::getInstence()->findPuzzle(&newPuzzlePos, POINT{ x, y });
 	if (-1 != puzzleIndex)
 	{
 		if (oldPuzzlePos.x == newPuzzlePos.x && oldPuzzlePos.y == newPuzzlePos.y)
 		{
-			Board::getInstence()->offPuzzleSolid(puzzleIndex, newPuzzlePos);
+			Board::getInstence()->deSelect(puzzleIndex, newPuzzlePos);
 			newPuzzlePos = { 0, 0 };
 		}
 		else
 		{
-			Board::getInstence()->onPuzzleSolid(puzzleIndex, newPuzzlePos, oldPuzzlePos);
+			Board::getInstence()->select(puzzleIndex, newPuzzlePos, oldPuzzlePos);
 		}
 	}
 
