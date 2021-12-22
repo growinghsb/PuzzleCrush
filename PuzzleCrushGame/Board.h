@@ -13,12 +13,12 @@ public:
 	int findPuzzle(POINT* puzzlePosInOut, POINT mousePos);
 	void select(int index, POINT puzzlePos, POINT oldPuzzlePos);
 	void deSelect(int index, POINT puzzlePos);
-	int getPuzzleIndex(POINT puzzlePos);
-
+	
 private:
 	Board();
 	~Board();
 
+	int getPuzzleIndex(POINT puzzlePos);
 	void fourWayPuzzleCheck(int index, POINT puzzlePos, bool state);
 	void print(HDC hdc, HWND hWnd);
 	void puzzleColorChange(int newPuzzleIndex, int oldPuzzleIndex, POINT oldPuzzlePos);

@@ -3,6 +3,7 @@
 
 Board* Board::mBoard = nullptr;
 int Board::mScore = 0;
+
 HBITMAP hBitmap = nullptr;
 
 // private
@@ -154,8 +155,6 @@ void Board::print(HDC hdc, HWND hWnd)
 	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
 	BitBlt(hdc, 0, 0, client.right, client.bottom, hMemDC, 0, 0, SRCCOPY);
 
-
-
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteDC(hMemDC);
 }
@@ -231,7 +230,6 @@ void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 	{
 		fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
 	}
-
 	fourWayPuzzleCheck(index, puzzlePos, true);
 }
 
@@ -249,7 +247,6 @@ int Board::getPuzzleIndex(POINT puzzlePos)
 			return i;
 		}
 	}
-
 	return -1;
 }
 

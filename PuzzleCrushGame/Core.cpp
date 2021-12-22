@@ -85,7 +85,6 @@ bool Core::Create()
 	RECT window = { 0, 0, resolution.x, resolution.y };
 	AdjustWindowRect(&window, WS_OVERLAPPEDWINDOW, false);
 	SetWindowPos(mHWnd, HWND_TOPMOST, 50, 50, window.right - window.left, window.bottom - window.top, SWP_SHOWWINDOW);
-
 	ShowWindow(mHWnd, SW_SHOW);
 
 	return true;
@@ -115,7 +114,6 @@ int Core::run()
 			Board::getInstence()->render(mHdc, mHWnd);
 		}
 	}
-
 	return (int)msg.wParam;
 }
 

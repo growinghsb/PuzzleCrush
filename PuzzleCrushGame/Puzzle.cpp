@@ -6,12 +6,10 @@ Puzzle::Puzzle(POINT pos, int size, int colorCode, int index)
 }
 
 Puzzle::Puzzle(long x, long y, int size, int colorCode, int index)
-	: mPos{}
+	: mPos{ x, y }
 	, mSize(size)
 	, mColorCode(colorCode)
 	, mIndex(index)
 	, mIsChoice(false)
 {
-	mPos.x = x;
-	mPos.y = y;
 }

@@ -39,6 +39,5 @@ void InputController::update(int x, int y)
 			Board::getInstence()->select(puzzleIndex, newPuzzlePos, oldPuzzlePos);
 		}
 	}
-
 	oldPuzzlePos = newPuzzlePos;
 }
