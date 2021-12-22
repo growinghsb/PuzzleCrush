@@ -21,7 +21,14 @@ private:
 
 	void fourWayPuzzleCheck(int index, POINT puzzlePos, bool state);
 	void print(HDC hdc, HWND hWnd);
-	
+	void puzzleColorChange(int newPuzzleIndex, int oldPuzzleIndex, POINT oldPuzzlePos);
+	void compareAllLine();
+	stack<class Puzzle*> compareWidthLine();
+	stack<class Puzzle*> compareHeightLine();
+	void widthCrush(stack<class Puzzle*>& crushPuzzles);
+	void heightCrush(stack<class Puzzle*>& crushPuzzles);
+	void clearStack(stack<class Puzzle*>& target);
+
 	void colorSwap(int& colorCode1, int& colorCode2)
 	{
 		int tmpColorCode = colorCode1;
@@ -33,6 +40,7 @@ private:
 	enum { WIDTH = 5, HEIGHT = 5, PUZZLE_SIZE = 80};
 
 	static Board* mBoard;
+	static int mScore;
 
 	vector<class Puzzle*> mPuzzles;
 	int mPuzzleColorNames[(unsigned int)COLORS::END];

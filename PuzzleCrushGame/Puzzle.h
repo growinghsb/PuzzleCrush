@@ -23,12 +23,13 @@ public:
 	}
 
 private:
-	Puzzle(POINT pos, int size, int colorCode);
-	Puzzle(long x, long y, int size, int colorCode);
+	Puzzle(POINT pos, int size, int colorCode, int index);
+	Puzzle(long x, long y, int size, int colorCode, int index);
 
 	POINT mPos;
 	int mSize;
 	int mColorCode;
+	int mIndex;
 	bool mIsChoice;
 };
 

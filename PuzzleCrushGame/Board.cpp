@@ -2,6 +2,7 @@
 #include "Puzzle.h"
 
 Board* Board::mBoard = nullptr;
+int Board::mScore = 0;
 HBITMAP hBitmap = nullptr;
 
 // private
@@ -24,7 +25,7 @@ Board::~Board()
 		delete mPuzzles[i];
 	}
 
-	if (nullptr != hBitmap) 
+	if (nullptr != hBitmap)
 	{
 		DeleteObject(hBitmap);
 	}
@@ -50,7 +51,7 @@ void Board::deleteInstence()
 
 void Board::init()
 {
-	srand(time(nullptr));
+	srand((unsigned int)time(nullptr));
 
 	mPuzzles.reserve(WIDTH * HEIGHT);
 
@@ -63,10 +64,13 @@ void Board::init()
 		for (int j = 0; j < WIDTH; ++j)
 		{
 			pos.x += PUZZLE_SIZE;
-			mPuzzles.push_back(new Puzzle(pos, PUZZLE_SIZE, mPuzzleColorNames[rand() % (unsigned int)COLORS::END]));
+			mPuzzles.push_back(new Puzzle(pos, PUZZLE_SIZE, mPuzzleColorNames[rand() % (unsigned int)COLORS::END], i * WIDTH + j));
 		}
 		pos.x = 0;
 	}
+
+	compareAllLine();
+	mScore = 0;
 }
 
 void Board::render(HDC hdc, HWND hWnd)
@@ -116,7 +120,6 @@ void Board::render(HDC hdc, HWND hWnd)
 
 		if (curPuzzle->isChoice())
 		{
-		
 			HPEN newPen = CreatePen(PS_DOT, 7, RGB(0, 0, 0));
 			HPEN oldPen = (HPEN)SelectObject(hMemDC, newPen);
 			Rectangle(hMemDC, curPuzzle->mPos.x, curPuzzle->mPos.y, curPuzzle->mPos.x + curPuzzle->mSize, curPuzzle->mPos.y + curPuzzle->mSize);
@@ -128,13 +131,16 @@ void Board::render(HDC hdc, HWND hWnd)
 		}
 	}
 
+	TCHAR score[128] = {};
+	wsprintf(score, TEXT("현재 점수: %d점"), mScore);
+	TextOut(hMemDC, (PUZZLE_SIZE * WIDTH + PUZZLE_SIZE) / 2, PUZZLE_SIZE / 2, score, lstrlen(score));
+
 	DeleteObject(SelectObject(hMemDC, oldBrush));
 	SelectObject(hMemDC, oldHBitmap);
 	DeleteDC(hMemDC);
 
 	print(hdc, hWnd);
 }
-
 
 void Board::print(HDC hdc, HWND hWnd)
 {
@@ -147,6 +153,8 @@ void Board::print(HDC hdc, HWND hWnd)
 	hMemDC = CreateCompatibleDC(hdc);
 	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
 	BitBlt(hdc, 0, 0, client.right, client.bottom, hMemDC, 0, 0, SRCCOPY);
+
+
 
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteDC(hMemDC);
@@ -172,15 +180,50 @@ int Board::findPuzzle(POINT* puzzlePosInOut, POINT mousePos)
 	return -1;
 }
 
+void Board::compareAllLine()
+{
+	stack<Puzzle*> puzzles;
+	while (true)
+	{
+		puzzles = compareWidthLine();
+
+		if (3 <= puzzles.size())
+		{
+			widthCrush(puzzles);
+			mScore += 3;
+			continue;
+		}
+		break;
+	}
+
+	while (true)
+	{
+		puzzles = compareHeightLine();
+
+		if (3 <= puzzles.size())
+		{
+			heightCrush(puzzles);
+			mScore += 3;
+			continue;
+		}
+		break;
+	}
+}
+
+void Board::puzzleColorChange(int newPuzzleIndex, int oldPuzzleIndex, POINT oldPuzzlePos)
+{
+	colorSwap(mPuzzles[newPuzzleIndex]->mColorCode, mPuzzles[oldPuzzleIndex]->mColorCode);
+	fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
+	compareAllLine();
+}
+
 void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 {
 	int oldPuzzleIndex = getPuzzleIndex(oldPuzzlePos);
 
 	if (mPuzzles[index]->isChoice())
 	{
-		colorSwap(mPuzzles[index]->mColorCode, mPuzzles[oldPuzzleIndex]->mColorCode);
-		fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
-
+		puzzleColorChange(index, oldPuzzleIndex, oldPuzzlePos);
 		return;
 	}
 
@@ -234,5 +277,138 @@ void Board::fourWayPuzzleCheck(int index, POINT puzzlePos, bool state)
 	if (HEIGHT * PUZZLE_SIZE >= puzzlePos.y + PUZZLE_SIZE)
 	{
 		mPuzzles[(size_t)index + HEIGHT]->setChoice(state);
+	}
+}
+
+stack<class Puzzle*> Board::compareWidthLine()
+{
+	stack<Puzzle*> puzzles;
+
+	for (int i = 0; i < WIDTH * HEIGHT; i += HEIGHT)
+	{
+		Puzzle* targetPuzzle = mPuzzles[i];
+		puzzles.push(targetPuzzle);
+
+		for (int j = 1; j < WIDTH; ++j)
+		{
+			if (targetPuzzle->mColorCode == mPuzzles[(size_t)i + j]->mColorCode)
+			{
+				puzzles.push(mPuzzles[(size_t)i + j]);
+			}
+			else
+			{
+				if (3 <= puzzles.size())
+				{
+					return puzzles;
+				}
+
+				clearStack(puzzles);
+				targetPuzzle = mPuzzles[(size_t)i + j];
+				puzzles.push(targetPuzzle);
+			}
+		}
+
+		if (3 <= puzzles.size())
+		{
+			return puzzles;
+		}
+		else
+		{
+			clearStack(puzzles);
+		}
+	}
+	return puzzles;
+}
+
+stack<class Puzzle*> Board::compareHeightLine()
+{
+	stack<Puzzle*> puzzles;
+
+	for (int i = 0; i < WIDTH; ++i)
+	{
+		Puzzle* targetPuzzle = mPuzzles[i];
+		puzzles.push(targetPuzzle);
+
+		for (int j = i + HEIGHT; j < WIDTH * HEIGHT; j += HEIGHT)
+		{
+			if (targetPuzzle->mColorCode == mPuzzles[j]->mColorCode)
+			{
+				puzzles.push(mPuzzles[j]);
+			}
+			else
+			{
+				if (3 <= puzzles.size())
+				{
+					return puzzles;
+				}
+
+				clearStack(puzzles);
+				targetPuzzle = mPuzzles[j];
+				puzzles.push(targetPuzzle);
+			}
+		}
+
+		if (3 <= puzzles.size())
+		{
+			return puzzles;
+		}
+		else
+		{
+			clearStack(puzzles);
+		}
+	}
+	return puzzles;
+}
+
+void Board::widthCrush(stack<class Puzzle*>& crushPuzzles)
+{
+	while (!crushPuzzles.empty())
+	{
+		Puzzle* target = crushPuzzles.top();
+
+		if (target->mPos.y == PUZZLE_SIZE)
+		{
+			target->mColorCode = mPuzzleColorNames[rand() % (unsigned int)COLORS::END];
+		}
+		else
+		{
+			while (target->mPos.y != PUZZLE_SIZE)
+			{
+				target->mColorCode = mPuzzles[(size_t)target->mIndex - HEIGHT]->mColorCode;
+				target = mPuzzles[(size_t)target->mIndex - HEIGHT];
+			}
+			target->mColorCode = mPuzzleColorNames[rand() % (unsigned int)COLORS::END];
+		}
+		crushPuzzles.pop();
+	}
+}
+
+void Board::heightCrush(stack<class Puzzle*>& crushPuzzles)
+{
+	int size = (int)crushPuzzles.size();
+
+	while (!crushPuzzles.empty())
+	{
+		Puzzle* target = crushPuzzles.top();
+		int upSidePuzzleIdx = target->mIndex - size * HEIGHT;
+
+		if (upSidePuzzleIdx >= 0)
+		{
+			target->mColorCode = mPuzzles[upSidePuzzleIdx]->mColorCode;
+			mPuzzles[upSidePuzzleIdx]->mColorCode = mPuzzleColorNames[rand() % (unsigned int)COLORS::END];
+		}
+		else
+		{
+			target->mColorCode = mPuzzleColorNames[rand() % (unsigned int)COLORS::END];
+		}
+		crushPuzzles.pop();
+	}
+}
+
+void Board::clearStack(stack<class Puzzle*>& target)
+{
+	while (!target.empty())
+	{
+		target.pop();
 	}
 }

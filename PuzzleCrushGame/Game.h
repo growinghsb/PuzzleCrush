@@ -8,8 +8,10 @@
 #include<string>
 #include<vector>
 #include<unordered_map>
+#include<stack>
 
 using std::string;
 using std::vector;
 using std::unordered_map;
 using std::make_pair;
+using std::stack;
