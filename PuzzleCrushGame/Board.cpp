@@ -109,7 +109,7 @@ void Board::draw(HDC hdc, HWND hWnd)
 			break;
 		}
 
-		if (curPuzzle->getChoice())
+		if (curPuzzle->isChoice())
 		{
 		
 			HPEN newPen = CreatePen(PS_DOT, 7, RGB(0, 0, 0));
@@ -170,6 +170,14 @@ int Board::findPuzzle(POINT* puzzlePosInOut, POINT mousePos)
 void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 {
 	int oldPuzzleIndex = getPuzzleIndex(oldPuzzlePos);
+
+	if (mPuzzles[index]->isChoice())
+	{
+		colorSwap(mPuzzles[index]->mColorCode, mPuzzles[oldPuzzleIndex]->mColorCode);
+		fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
+
+		return;
+	}
 
 	if (-1 != oldPuzzleIndex)
 	{

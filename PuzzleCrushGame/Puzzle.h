@@ -17,7 +17,7 @@ public:
 		mIsChoice = state;
 	}
 
-	bool getChoice() 
+	bool isChoice() 
 	{
 		return mIsChoice;
 	}

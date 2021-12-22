@@ -21,6 +21,13 @@ private:
 
 	void fourWayPuzzleCheck(int index, POINT puzzlePos, bool state);
 	void print(HDC hdc, HWND hWnd);
+	
+	void colorSwap(int& colorCode1, int& colorCode2)
+	{
+		int tmpColorCode = colorCode1;
+		colorCode1 = colorCode2;
+		colorCode2 = tmpColorCode;
+	}
 
 	enum class COLORS { RED, PINK, ORANGE, GREEN, BLUE, YELLOW, END };
 	enum { WIDTH = 5, HEIGHT = 5, PUZZLE_SIZE = 80};
