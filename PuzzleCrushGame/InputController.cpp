@@ -21,7 +21,7 @@ void InputController::deleteInstence()
 	}
 }
 
-void InputController::lButtonClicked(int x, int y)
+void InputController::update(int x, int y)
 {
 	static POINT oldPuzzlePos = {};
 	POINT		 newPuzzlePos = {};

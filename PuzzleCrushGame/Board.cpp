@@ -1,8 +1,8 @@
 #include "Board.h"
 #include "Puzzle.h"
 
-Board* Board::mBoard;
-HBITMAP hBitmap;
+Board* Board::mBoard = nullptr;
+HBITMAP hBitmap = nullptr;
 
 // private
 Board::Board()
@@ -22,6 +22,11 @@ Board::~Board()
 	for (int i = 0; i < WIDTH * HEIGHT; ++i)
 	{
 		delete mPuzzles[i];
+	}
+
+	if (nullptr != hBitmap) 
+	{
+		DeleteObject(hBitmap);
 	}
 }
 
@@ -64,7 +69,7 @@ void Board::init()
 	}
 }
 
-void Board::draw(HDC hdc, HWND hWnd)
+void Board::render(HDC hdc, HWND hWnd)
 {
 	HBITMAP oldHBitmap;
 	HDC hMemDC;

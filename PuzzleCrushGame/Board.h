@@ -9,7 +9,7 @@ public:
 	static void deleteInstence();
 
 	void init();
-	void draw(HDC hdc, HWND hWnd);
+	void render(HDC hdc, HWND hWnd);
 	int findPuzzle(POINT* puzzlePosInOut, POINT mousePos);
 	void select(int index, POINT puzzlePos, POINT oldPuzzlePos);
 	void deSelect(int index, POINT puzzlePos);

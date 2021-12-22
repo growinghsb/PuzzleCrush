@@ -7,7 +7,7 @@ class InputController
 public:
 	static InputController* getInstence();
 	static void deleteInstence();
-	void lButtonClicked(int x, int y);
+	void update(int x, int y);
 
 private:
 	InputController()  = default;

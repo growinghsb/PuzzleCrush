@@ -15,7 +15,7 @@ public:
 
 private:
 	Core()  = default;
-	~Core() = default;
+	~Core();
 
 	ATOM				MyRegisterClass();
 	bool                Create();

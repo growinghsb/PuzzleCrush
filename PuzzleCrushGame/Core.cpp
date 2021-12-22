@@ -14,6 +14,11 @@ Core* Core::getInstence()
 	return mCore;
 }
 
+Core::~Core()
+{
+	ReleaseDC(mHWnd, mHdc);
+}
+
 void Core::deleteInstence()
 {
 	if (nullptr != mCore)
@@ -38,10 +43,10 @@ bool Core::init(HINSTANCE hInstence)
 	}
 
 	Board::getInstence()->init();
-	Board::getInstence()->draw(mHdc, mHWnd);
 
 	return true;
 }
+
 
 ATOM Core::MyRegisterClass()
 {
@@ -107,7 +112,7 @@ int Core::run()
 				게임이 실행되는 로직은 여기서부터 시작이다.
 			*/
 			
-			Board::getInstence()->draw(mHdc, mHWnd);
+			Board::getInstence()->render(mHdc, mHWnd);
 		}
 	}
 
@@ -127,7 +132,7 @@ LRESULT Core::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_LBUTTONDOWN:
-		InputController::getInstence()->lButtonClicked(LOWORD(lParam), HIWORD(lParam));
+		InputController::getInstence()->update(LOWORD(lParam), HIWORD(lParam));
 		break;
 
 	case WM_DESTROY:
