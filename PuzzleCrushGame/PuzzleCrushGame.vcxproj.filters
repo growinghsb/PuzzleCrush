@@ -13,17 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Core">
+    <Filter Include="Game">
+      <UniqueIdentifier>{e0702074-1819-4d39-932e-83b55562e29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\01.Core">
       <UniqueIdentifier>{16c40db7-5b30-4d83-b542-c05b2ed8400d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Board">
+    <Filter Include="Game\02.Board">
       <UniqueIdentifier>{61368535-321a-4044-b528-74e21cb95da4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Puzzle">
+    <Filter Include="Game\03.Puzzle">
       <UniqueIdentifier>{275bea8d-f3e2-4fa7-b5f8-23ffa8d093d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Input">
+    <Filter Include="Game\04.Input">
       <UniqueIdentifier>{5f580ecc-7da8-4ce7-a7b8-471e5ab55b43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\05.Time">
+      <UniqueIdentifier>{5711b40d-a96e-435e-ae92-35bc1da2cead}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,19 +46,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core.h">
-      <Filter>Core</Filter>
+      <Filter>Game\01.Core</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Board.h">
-      <Filter>Board</Filter>
+      <Filter>Game\02.Board</Filter>
     </ClInclude>
     <ClInclude Include="Puzzle.h">
-      <Filter>Puzzle</Filter>
+      <Filter>Game\03.Puzzle</Filter>
     </ClInclude>
     <ClInclude Include="InputController.h">
-      <Filter>Input</Filter>
+      <Filter>Game\04.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Game\05.Time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,16 +69,19 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">
-      <Filter>Core</Filter>
+      <Filter>Game\01.Core</Filter>
     </ClCompile>
     <ClCompile Include="Board.cpp">
-      <Filter>Board</Filter>
+      <Filter>Game\02.Board</Filter>
     </ClCompile>
     <ClCompile Include="Puzzle.cpp">
-      <Filter>Puzzle</Filter>
+      <Filter>Game\03.Puzzle</Filter>
     </ClCompile>
     <ClCompile Include="InputController.cpp">
-      <Filter>Input</Filter>
+      <Filter>Game\04.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Game\05.Time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

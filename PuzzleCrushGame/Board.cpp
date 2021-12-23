@@ -1,5 +1,6 @@
-#include "Board.h"
-#include "Puzzle.h"
+#include"Board.h"
+#include"Puzzle.h"
+#include"TimeManager.h"
 
 Board* Board::mBoard = nullptr;
 int Board::mScore = 0;
@@ -165,7 +166,10 @@ void Board::print(HDC hdc, HWND hWnd)
 		if (IDYES == MessageBox(hWnd, TEXT("맞출 수 있는 퍼즐이 없습니다.\n판을 다시 세팅하시겠습니까?"), TEXT("안내"), MB_ICONQUESTION | MB_YESNO))
 		{
 			mPuzzles.clear();
+			int curScore = mScore;
 			init();
+
+			mScore = curScore;
 		}
 		else 
 		{
@@ -606,7 +610,7 @@ bool Board::isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles)
 	targetColorCode = target->mColorCode;
 	centerIdx = target->mIndex - HEIGHT;
 
-	if (0 < centerIdx)
+	if (0 <= centerIdx)
 	{
 		if (0 != (centerIdx + 1) % WIDTH && mPuzzles[(size_t)centerIdx + 1]->mColorCode == targetColorCode)
 		{
@@ -616,7 +620,7 @@ bool Board::isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles)
 		{
 			return true;
 		}
-		else if (0 < centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
+		else if (0 <= centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx - HEIGHT]->mColorCode == targetColorCode)
 		{
 			return true;
 		}

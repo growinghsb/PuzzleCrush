@@ -11,6 +11,8 @@
 #include<stack>
 
 using std::string;
+using std::wstring;
+using std::to_string;
 using std::vector;
 using std::unordered_map;
 using std::make_pair;

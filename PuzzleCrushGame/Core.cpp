@@ -1,6 +1,7 @@
 #include"Core.h"
 #include"Board.h"
 #include"InputController.h"
+#include"TimeManager.h"
 
 Core* Core::mCore;
 bool Core::mFlag = true;
@@ -29,6 +30,7 @@ void Core::deleteInstence()
 
 	Board::deleteInstence();
 	InputController::deleteInstence();
+	TimeManager::deleteInstence();
 }
 
 bool Core::init(HINSTANCE hInstence)
@@ -43,6 +45,7 @@ bool Core::init(HINSTANCE hInstence)
 	}
 
 	Board::getInstence()->init();
+	TimeManager::getInstence()->init();
 
 	return true;
 }
@@ -110,7 +113,8 @@ int Core::run()
 				메시지가 없을 때 계속 이쪽으로 들어오면서
 				게임이 실행되는 로직은 여기서부터 시작이다.
 			*/
-			
+
+			TimeManager::getInstence()->update(mHWnd);
 			Board::getInstence()->render(mHdc, mHWnd);
 		}
 	}
