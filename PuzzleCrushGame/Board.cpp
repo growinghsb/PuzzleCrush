@@ -16,6 +16,7 @@ Board::Board()
 	(unsigned int)COLORS::YELLOW,
 	(unsigned int)COLORS::BLUE,
 }
+	, mValidBoard(true)
 {
 }
 
@@ -71,6 +72,7 @@ void Board::init()
 	}
 
 	compareAllLine();
+	setValid(isCrushPuzzleCheckAllLine());
 	mScore = 0;
 }
 
@@ -157,6 +159,19 @@ void Board::print(HDC hdc, HWND hWnd)
 
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteDC(hMemDC);
+
+	if (!isValid())
+	{
+		if (IDYES == MessageBox(hWnd, TEXT("맞출 수 있는 퍼즐이 없습니다.\n판을 다시 세팅하시겠습니까?"), TEXT("안내"), MB_ICONQUESTION | MB_YESNO))
+		{
+			mPuzzles.clear();
+			init();
+		}
+		else 
+		{
+			DestroyWindow(hWnd);
+		}
+	}
 }
 
 int Board::findPuzzle(POINT* puzzlePosInOut, POINT mousePos)
@@ -181,28 +196,24 @@ int Board::findPuzzle(POINT* puzzlePosInOut, POINT mousePos)
 
 void Board::compareAllLine()
 {
-	stack<Puzzle*> puzzles;
+	stack<Puzzle*> widthPuzzles;
+	stack<Puzzle*> heightPuzzles;
+
 	while (true)
 	{
-		puzzles = compareWidthLine();
-
-		if (3 <= puzzles.size())
+		widthPuzzles = compareWidthLine();
+		if (3 <= widthPuzzles.size())
 		{
-			widthCrush(puzzles);
-			mScore += 3;
+			mScore += (int)widthPuzzles.size();
+			widthCrush(widthPuzzles);
 			continue;
 		}
-		break;
-	}
 
-	while (true)
-	{
-		puzzles = compareHeightLine();
-
-		if (3 <= puzzles.size())
+		heightPuzzles = compareHeightLine();
+		if (3 <= heightPuzzles.size())
 		{
-			heightCrush(puzzles);
-			mScore += 3;
+			mScore += (int)heightPuzzles.size();
+			heightCrush(heightPuzzles);
 			continue;
 		}
 		break;
@@ -223,6 +234,8 @@ void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 	if (mPuzzles[index]->isChoice())
 	{
 		puzzleColorChange(index, oldPuzzleIndex, oldPuzzlePos);
+		setValid(isCrushPuzzleCheckAllLine());
+
 		return;
 	}
 
@@ -408,4 +421,209 @@ void Board::clearStack(stack<class Puzzle*>& target)
 	{
 		target.pop();
 	}
+}
+
+bool Board::isCrushPuzzleCheckAllLine()
+{
+	if (isCrushPuzzleWidth())
+	{
+		return true;
+	}
+
+	if (isCrushPuzzleHeight())
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Board::isCrushPuzzleWidth()
+{
+	stack<Puzzle*> puzzles;
+
+	for (int i = 0; i < WIDTH * HEIGHT; i += HEIGHT)
+	{
+		Puzzle* targetPuzzle = mPuzzles[i];
+		puzzles.push(targetPuzzle);
+
+		for (int j = 1; j < WIDTH; ++j)
+		{
+			if (targetPuzzle->mColorCode == mPuzzles[(size_t)i + j]->mColorCode)
+			{
+				puzzles.push(mPuzzles[(size_t)i + j]);
+			}
+			else
+			{
+				if (2 == puzzles.size() && isWidthCrushPossible(puzzles))
+				{
+					return true;
+				}
+
+				clearStack(puzzles);
+				targetPuzzle = mPuzzles[(size_t)i + j];
+				puzzles.push(targetPuzzle);
+
+				continue;
+			}
+
+			if (2 == puzzles.size() && isWidthCrushPossible(puzzles))
+			{
+				return true;
+			}
+			else
+			{
+				clearStack(puzzles);
+			}
+		}
+		clearStack(puzzles);
+	}
+	return false;
+}
+
+bool Board::isCrushPuzzleHeight()
+{
+	stack<Puzzle*> puzzles;
+
+	for (int i = 0; i < WIDTH; ++i)
+	{
+		Puzzle* targetPuzzle = mPuzzles[i];
+		puzzles.push(targetPuzzle);
+
+		for (int j = i + HEIGHT; j < WIDTH * HEIGHT; j += HEIGHT)
+		{
+			if (targetPuzzle->mColorCode == mPuzzles[j]->mColorCode)
+			{
+				puzzles.push(mPuzzles[j]);
+			}
+			else
+			{
+				if (2 == puzzles.size() && isHeightCrushPossible(puzzles))
+				{
+					return true;
+				}
+
+				clearStack(puzzles);
+				targetPuzzle = mPuzzles[j];
+				puzzles.push(targetPuzzle);
+
+				continue;
+			}
+
+			if (2 == puzzles.size() && isHeightCrushPossible(puzzles))
+			{
+				return true;
+			}
+			else
+			{
+				clearStack(puzzles);
+			}
+		}
+		clearStack(puzzles);
+	}
+	return false;
+}
+
+bool Board::isWidthCrushPossible(stack<class Puzzle*>& possiblePuzzles)
+{
+	Puzzle* target = possiblePuzzles.top();
+	int targetColorCode = target->mColorCode;
+	int centerIdx = target->mIndex + 1;
+
+	if (0 != centerIdx % WIDTH && WIDTH * HEIGHT > centerIdx)
+	{
+		if (0 <= centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx - HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH * HEIGHT > centerIdx + HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (0 != (centerIdx + 1) % WIDTH && mPuzzles[(size_t)centerIdx + 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else
+		{
+			possiblePuzzles.pop();
+		}
+	}
+
+	target = possiblePuzzles.top();
+	targetColorCode = target->mColorCode;
+	centerIdx = target->mIndex - 1;
+
+	if (WIDTH - 1 != centerIdx % WIDTH && 0 < centerIdx)
+	{
+		if (0 <= centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx - HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH * HEIGHT > centerIdx + HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else
+		{
+			possiblePuzzles.pop();
+		}
+	}
+	return false;
+}
+
+bool Board::isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles)
+{
+	Puzzle* target = possiblePuzzles.top();
+	int targetColorCode = target->mColorCode;
+	int centerIdx = target->mIndex + HEIGHT;
+
+	if (WIDTH * HEIGHT > centerIdx)
+	{
+		if (0 != (centerIdx + 1) % WIDTH && mPuzzles[(size_t)centerIdx + 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH * HEIGHT > centerIdx + HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else
+		{
+			possiblePuzzles.pop();
+		}
+	}
+
+	target = possiblePuzzles.top();
+	targetColorCode = target->mColorCode;
+	centerIdx = target->mIndex - HEIGHT;
+
+	if (0 < centerIdx)
+	{
+		if (0 != (centerIdx + 1) % WIDTH && mPuzzles[(size_t)centerIdx + 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else if (0 < centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
+		{
+			return true;
+		}
+		else
+		{
+			possiblePuzzles.pop();
+		}
+	}
+	return false;
 }

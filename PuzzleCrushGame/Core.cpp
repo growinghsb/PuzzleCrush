@@ -129,6 +129,7 @@ LRESULT Core::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 	}
 	break;
+
 	case WM_LBUTTONDOWN:
 		InputController::getInstence()->update(LOWORD(lParam), HIWORD(lParam));
 		break;
