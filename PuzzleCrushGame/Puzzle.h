@@ -22,6 +22,11 @@ public:
 		return mIsChoice;
 	}
 
+	void changeColor(int colorCode) 
+	{
+		mColorCode = colorCode;
+	}
+
 private:
 	Puzzle(POINT pos, int size, int colorCode, int index);
 	Puzzle(long x, long y, int size, int colorCode, int index);

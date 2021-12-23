@@ -43,6 +43,7 @@ private:
 	bool isCrushPuzzleHeight();
 	bool isWidthCrushPossible(stack<class Puzzle*>& possiblePuzzles);
 	bool isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles);
+	void puzzleColorShake();
 
 	void colorSwap(int& colorCode1, int& colorCode2)
 	{

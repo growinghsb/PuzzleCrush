@@ -165,11 +165,10 @@ void Board::print(HDC hdc, HWND hWnd)
 	{
 		if (IDYES == MessageBox(hWnd, TEXT("맞출 수 있는 퍼즐이 없습니다.\n판을 다시 세팅하시겠습니까?"), TEXT("안내"), MB_ICONQUESTION | MB_YESNO))
 		{
-			mPuzzles.clear();
-			int curScore = mScore;
-			init();
+			int currentScore = mScore;
+			puzzleColorShake();
 
-			mScore = curScore;
+			mScore = currentScore;
 		}
 		else 
 		{
@@ -630,4 +629,16 @@ bool Board::isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles)
 		}
 	}
 	return false;
+}
+
+void Board::puzzleColorShake()
+{
+	for (int i = 0; i < WIDTH * HEIGHT; ++i) 
+	{
+		mPuzzles[i]->changeColor(mPuzzleColorNames[rand() % (unsigned int)COLORS::END]);
+	}
+
+	compareAllLine();
+	setValid(isCrushPuzzleCheckAllLine());
+	mScore = 0;
 }
