@@ -14,4 +14,6 @@
      물어보는 메시지가 나오고, '예' 버튼을 누르면 퍼즐이     
      다시 세팅되게 됩니다.     
   8. 스코어 체크가 되고, FPS, DS, 타이머 기능이 있습니다.
+# 아래는 유튜브 영상 링크 입니다. 퍼즐게임 만들기 시리즈 입니다.
+https://www.youtube.com/watch?v=79uOaM1CxdE&list=PL8PUhmBn4xvPXRG-AxTZMVHEw9KiczKK4&index=3
     
