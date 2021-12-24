@@ -228,6 +228,7 @@ void Board::puzzleColorChange(int newPuzzleIndex, int oldPuzzleIndex, POINT oldP
 	colorSwap(mPuzzles[newPuzzleIndex]->mColorCode, mPuzzles[oldPuzzleIndex]->mColorCode);
 	fourWayPuzzleCheck(oldPuzzleIndex, oldPuzzlePos, false);
 	compareAllLine();
+	setValid(isCrushPuzzleCheckAllLine());
 }
 
 void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
@@ -237,7 +238,6 @@ void Board::select(int index, POINT puzzlePos, POINT oldPuzzlePos)
 	if (mPuzzles[index]->isChoice())
 	{
 		puzzleColorChange(index, oldPuzzleIndex, oldPuzzlePos);
-		setValid(isCrushPuzzleCheckAllLine());
 
 		return;
 	}
@@ -557,17 +557,17 @@ bool Board::isWidthCrushPossible(stack<class Puzzle*>& possiblePuzzles)
 	targetColorCode = target->mColorCode;
 	centerIdx = target->mIndex - 1;
 
-	if (WIDTH - 1 != centerIdx % WIDTH && 0 < centerIdx)
+	if (WIDTH - 1 != centerIdx % WIDTH && 0 <= centerIdx)
 	{
 		if (0 <= centerIdx - HEIGHT && mPuzzles[(size_t)centerIdx - HEIGHT]->mColorCode == targetColorCode)
 		{
 			return true;
-		}
+		} 
 		else if (WIDTH * HEIGHT > centerIdx + HEIGHT && mPuzzles[(size_t)centerIdx + HEIGHT]->mColorCode == targetColorCode)
 		{
 			return true;
 		}
-		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
+		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && 0 < centerIdx - 1 && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
 		{
 			return true;
 		}
@@ -615,7 +615,7 @@ bool Board::isHeightCrushPossible(stack<class Puzzle*>& possiblePuzzles)
 		{
 			return true;
 		}
-		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
+		else if (WIDTH - 1 != (centerIdx - 1) % WIDTH && 0 < centerIdx - 1 && mPuzzles[(size_t)centerIdx - 1]->mColorCode == targetColorCode)
 		{
 			return true;
 		}

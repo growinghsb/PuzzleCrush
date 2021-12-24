@@ -1,14 +1,18 @@
 #pragma once
 
-#include "framework.h"
-#include "PuzzleCrushGame.h"
-#include "Resource.h"
-
 #include<iostream>
 #include<string>
 #include<vector>
 #include<unordered_map>
 #include<stack>
+
+#include<cassert>
+
+#include "framework.h"
+#include "PuzzleCrushGame.h"
+#include "Resource.h"
+
+
 
 using std::string;
 using std::wstring;
