@@ -64,8 +64,6 @@ TimeManager::~TimeManager()
 {
 }
 
-
-
 TimeManager* TimeManager::getInstence()
 {
 	if (nullptr == mTimeManager)
